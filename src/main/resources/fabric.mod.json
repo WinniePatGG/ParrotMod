@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "parrotmod",
+  "version": "${version}",
+  "name": "ParrotMod",
+  "description": "Parrotmod is a utility mod for Minecraft which adds some useful features",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/parrotmod/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "de.winniepat.parrotmod.Parrotmod"
+    ]
+  },
+  "mixins": [
+    "parrotmod.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
