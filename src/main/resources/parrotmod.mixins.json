@@ -4,6 +4,7 @@
   "package": "de.winniepat.parrotmod.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
+    "TitleScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

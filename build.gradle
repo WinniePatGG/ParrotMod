@@ -15,6 +15,7 @@ repositories {
     maven { url 'https://maven.wispforest.io/releases/' }
     maven { url 'https://jitpack.io' }
     maven { url = "https://cursemaven.com" }
+    maven { url 'https://maven.izzel.io/releases/' }
 }
 
 dependencies {
@@ -24,6 +25,8 @@ dependencies {
     implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     implementation "curse.maven:modern-ui-352491:8206272"
+    implementation "icyllis.modernui:ModernUI-Fabric:26.1.2-3.13.0.4"
+    implementation "icyllis.arc3d:arc3d-core:2026.1.0"
 }
 
 processResources {
