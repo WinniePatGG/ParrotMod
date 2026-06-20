@@ -1,30 +1,30 @@
 package de.winniepat.parrotmod.mixin;
 
-import de.winniepat.parrotmod.ui.SettingsScreen;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button; // Updated import
+import de.winniepat.parrotmod.ui.SettingsFragment;
+import icyllis.modernui.mc.MuiModApi;
+import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.resources.Identifier;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
-import net.minecraft.network.chat.Component;        // Replaces Text
+import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TitleScreen.class)
-public class TitleScreenMixin extends Screen {
+public abstract class TitleScreenMixin extends Screen {
 
     protected TitleScreenMixin(Component title) {
         super(title);
     }
 
-    @Inject(at = @At("RETURN"), method = "init")
-    private void addCustomButton(CallbackInfo ci) {
-        int x = this.width / 2 - 100;
-        int y = this.height / 4 + 120;
-
-        this.addRenderableWidget(Button.builder(Component.literal("Parrot Mod"), (button) -> {
-            Minecraft.getInstance().setScreen(new SettingsScreen(Component.literal("Settings")));
-        }).bounds(x, y, 200, 20).build());
+    @Inject(method = "init", at = @At("TAIL"))
+    private void onInit(CallbackInfo ci) {
+        WidgetSprites sprites = new WidgetSprites(Identifier.fromNamespaceAndPath("parrotmod", "icon"), Identifier.fromNamespaceAndPath("parrotmod", "icon"));
+        this.addRenderableWidget(new ImageButton(this.width / 2 + 104, this.height / 4 + 48, 20, 20, sprites, b -> {
+            MuiModApi.get().openScreen(new SettingsFragment());
+        }));
     }
 }
