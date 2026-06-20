@@ -21,7 +21,7 @@
     "fabricloader": ">=${loader_version}",
     "fabric-api": "*",
     "minecraft": "${minecraft_version}",
-    "modernui": "3.13.0.4",
+    "modernui": ">=3.13.0.4",
     "forgeconfigapiport": ">=26.1.0"
   }
 }

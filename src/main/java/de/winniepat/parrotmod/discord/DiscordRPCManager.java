@@ -8,6 +8,7 @@ import com.jagrosh.discordipc.entities.Packet;
 import com.jagrosh.discordipc.entities.RichPresence;
 import com.jagrosh.discordipc.entities.User;
 import com.jagrosh.discordipc.exceptions.NoDiscordClientException;
+import de.winniepat.parrotmod.ParrotLogger;
 import de.winniepat.parrotmod.config.ConfigManager;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -49,15 +50,11 @@ public class DiscordRPCManager {
     public static void init() {
         ConfigManager.registerListener(cfg -> {
             if (cfg.enableDiscordRPC) {
-                if (!connected && client == null) {
+                if (client == null) {
                     startClient();
                 }
             } else {
-                if (client != null) {
-                    shutdown();
-                    client = null;
-                    connected = false;
-                }
+                shutdown();
             }
         });
 
@@ -189,6 +186,17 @@ public class DiscordRPCManager {
     }
 
     public static void shutdown() {
-        if (client != null) client.close();
+        if (client != null) {
+            try {
+                if (connected) {
+                    client.close();
+                }
+            } catch (Exception e) {
+                ParrotLogger.logError(DiscordRPCManager.class, "Error while closing Discord RPC client", e);
+            } finally {
+                client = null;
+                connected = false;
+            }
+        }
     }
 }

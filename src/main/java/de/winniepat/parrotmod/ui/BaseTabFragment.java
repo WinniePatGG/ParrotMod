@@ -35,7 +35,6 @@ public abstract class BaseTabFragment extends Fragment {
         tv.setText(title.toUpperCase());
         tv.setTextSize(11);
         tv.setTextColor(COLOR_ACCENT);
-        // Letter spacing might not be available in all ModernUI versions, but let's try if it exists or just skip
         var p = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         p.topMargin = dp(24);
         p.bottomMargin = dp(8);

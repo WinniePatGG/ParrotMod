@@ -19,11 +19,9 @@ public class SettingsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, DataSet savedInstanceState) {
-        // Main container with shadow/margin if needed, but here it's centering
         FrameLayout root = new FrameLayout(getContext());
         root.setLayoutParams(new FrameLayout.LayoutParams(dp(720), dp(480), Gravity.CENTER));
 
-        // Background
         View bg = new View(getContext());
         bg.setBackground(makeRoundedBg(COLOR_BACKGROUND, 16));
         root.addView(bg);
@@ -32,19 +30,17 @@ public class SettingsFragment extends Fragment {
         layout.setOrientation(LinearLayout.HORIZONTAL);
         root.addView(layout);
 
-        // Sidebar Container
         FrameLayout sidebarContainer = new FrameLayout(getContext());
         var sidebarParams = new LinearLayout.LayoutParams(dp(170), ViewGroup.LayoutParams.MATCH_PARENT);
         layout.addView(sidebarContainer, sidebarParams);
 
         View sidebarBg = new View(getContext());
         sidebarBg.setBackground(makeRoundedBg(COLOR_SIDEBAR, 16));
-        // We only want right side to be sharp, but for simplicity we just overlap or use a large radius
         sidebarContainer.addView(sidebarBg);
 
         LinearLayout sidebarContent = new LinearLayout(getContext());
         sidebarContent.setOrientation(LinearLayout.VERTICAL);
-        sidebarContent.setPadding(0, dp(24), 0, dp(16)); // Removed horizontal padding to allow edge indicator
+        sidebarContent.setPadding(0, dp(24), 0, dp(16));
         sidebarContainer.addView(sidebarContent, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
@@ -53,22 +49,19 @@ public class SettingsFragment extends Fragment {
         title.setTextSize(22);
         title.setGravity(Gravity.CENTER);
         title.setTextColor(COLOR_ACCENT);
-        title.setPadding(dp(16), 0, dp(16), dp(32)); // Added horizontal padding back to title
+        title.setPadding(dp(16), 0, dp(16), dp(32));
         sidebarContent.addView(title);
 
-        // Tabs container
         FrameLayout tabsContainer = new FrameLayout(getContext());
         sidebarContent.addView(tabsContainer, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
 
         LinearLayout tabsLayout = new LinearLayout(getContext());
         tabsLayout.setOrientation(LinearLayout.VERTICAL);
-        // Center tabs vertically in available space
         tabsContainer.addView(tabsLayout, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
 
 
-        // Content Area
         FrameLayout contentArea = new FrameLayout(getContext());
         contentArea.setId(R.id.content);
         var contentParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f);
@@ -112,7 +105,6 @@ public class SettingsFragment extends Fragment {
             tabButtons[index] = tab;
         }
 
-        // Footer
         TextView footer = new TextView(getContext());
         String version = FabricLoader.getInstance().getModContainer("parrotmod")
                 .map(m -> m.getMetadata().getVersion().getFriendlyString()).orElse("?.?.?");
@@ -123,7 +115,6 @@ public class SettingsFragment extends Fragment {
         footer.setPadding(dp(16), dp(12), dp(16), dp(12));
         sidebarContent.addView(footer);
 
-        // Entrance Animation
         root.setAlpha(0);
         root.setScaleX(0.96f);
         root.setScaleY(0.96f);
@@ -131,7 +122,6 @@ public class SettingsFragment extends Fragment {
         ObjectAnimator.ofFloat(root, View.SCALE_X, 0.96f, 1).setDuration(450).start();
         ObjectAnimator.ofFloat(root, View.SCALE_Y, 0.96f, 1).setDuration(450).start();
 
-        // Initial tab
         root.post(() -> {
             tabButtons[0].callOnClick();
         });
