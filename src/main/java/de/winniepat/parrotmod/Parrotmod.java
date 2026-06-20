@@ -1,5 +1,6 @@
 package de.winniepat.parrotmod;
 
+import de.winniepat.parrotmod.command.CommandManager;
 import de.winniepat.parrotmod.config.ConfigManager;
 import de.winniepat.parrotmod.discord.DiscordRPCManager;
 import net.fabricmc.api.ModInitializer;
@@ -19,6 +20,7 @@ public class Parrotmod implements ModInitializer {
     public void onInitialize() {
         ConfigManager.load();
         DiscordRPCManager.init();
+        CommandManager.init();
 
         ClientLifecycleEvents.CLIENT_STOPPING.register(client -> DiscordRPCManager.shutdown());
 
