@@ -37,8 +37,9 @@ public class SettingsFragment extends Fragment {
         contentParams.leftMargin = dp(6);
         root.addView(contentArea, contentParams);
 
-        String[] tabNames = {"General", "Graphics", "Audio", "Keybinds"};
+        String[] tabNames = {"Info", "General"};
         Fragment[] tabFragments = {
+                new InfoTabFragment(),
                 new GeneralTabFragment()
         };
 
