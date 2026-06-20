@@ -1,92 +1,91 @@
 package de.winniepat.parrotmod.ui;
+
 import de.winniepat.parrotmod.config.ConfigManager;
+import de.winniepat.parrotmod.ui.util.ParrotTheme;
+import icyllis.modernui.animation.ObjectAnimator;
 import icyllis.modernui.util.DataSet;
 import icyllis.modernui.view.LayoutInflater;
 import icyllis.modernui.view.View;
 import icyllis.modernui.view.ViewGroup;
 import icyllis.modernui.widget.LinearLayout;
-import icyllis.modernui.widget.Switch;
 import icyllis.modernui.widget.ScrollView;
-import java.util.ArrayList;
-import java.util.List;
 
 public class DiscordTabFragment extends BaseTabFragment {
 
-    private final List<View> rpcDetailViews = new ArrayList<>();
+    private LinearLayout contentLayout;
+    private LinearLayout subSettingsGroup;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, DataSet savedInstanceData) {
-        ScrollView scrollView = new ScrollView(getContext());
-        scrollView.setFillViewport(true);
+        ScrollView scroll = new ScrollView(getContext());
 
-        LinearLayout layout = new LinearLayout(getContext());
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(dp(28), dp(24), dp(28), dp(24));
-        scrollView.addView(layout);
+        contentLayout = new LinearLayout(getContext());
+        contentLayout.setOrientation(LinearLayout.VERTICAL);
+        contentLayout.setPadding(ParrotTheme.dp(40), ParrotTheme.dp(40), ParrotTheme.dp(40), ParrotTheme.dp(40));
+        scroll.addView(contentLayout);
 
-        addTabHeader(layout, "Discord Rich Presence", "Connect your Minecraft activity to your Discord profile.");
+        addPageHeader(contentLayout, "Discord Rich Presence", "Broadcast your Minecraft activity.");
 
-        addSectionHeader(layout, "Core Integration");
+        addSectionLabel(contentLayout, "Core Integration");
 
-        addSwitchRow(layout, "Status Integration", "Toggle Discord Rich Presence globally.",
+        contentLayout.addView(createToggleCard("Enable Rich Presence", "Connect Parrot to your Discord client.",
                 ConfigManager.getInstance().enableDiscordRPC, (v, checked) -> {
-            ConfigManager.getInstance().enableDiscordRPC = checked;
-            ConfigManager.save();
-            updateRPCDetailsEnabled(checked);
-        });
+                    ConfigManager.getInstance().enableDiscordRPC = checked;
+                    ConfigManager.save();
+                    animateSubSettingsState(checked);
+                }));
 
-        addSectionHeader(layout, "Status Customization");
+        addSectionLabel(contentLayout, "Activity Customization");
 
-        rpcDetailViews.add(addSwitchRow(layout, "Location Tracking", "Broadcast your current biome.",
+        subSettingsGroup = new LinearLayout(getContext());
+        subSettingsGroup.setOrientation(LinearLayout.VERTICAL);
+        contentLayout.addView(subSettingsGroup);
+
+        subSettingsGroup.addView(createToggleCard("Location Tracking", "Broadcast your current biome and dimension.",
                 ConfigManager.getInstance().showBiomeInRPC, (v, checked) -> {
-            ConfigManager.getInstance().showBiomeInRPC = checked;
-            ConfigManager.save();
-        }));
+                    ConfigManager.getInstance().showBiomeInRPC = checked;
+                    ConfigManager.save();
+                }));
 
-        rpcDetailViews.add(addSwitchRow(layout, "Equipment Status", "Show your currently held items.",
+        subSettingsGroup.addView(createToggleCard("Equipment Status", "Show your currently held items and armor.",
                 ConfigManager.getInstance().showHeldItemInRPC, (v, checked) -> {
-            ConfigManager.getInstance().showHeldItemInRPC = checked;
-            ConfigManager.save();
-        }));
+                    ConfigManager.getInstance().showHeldItemInRPC = checked;
+                    ConfigManager.save();
+                }));
 
-        rpcDetailViews.add(addSwitchRow(layout, "Vitality Info", "Display your current health status.",
+        subSettingsGroup.addView(createToggleCard("Vitality Info", "Display your exact health and hunger.",
                 ConfigManager.getInstance().showHealthInRPC, (v, checked) -> {
-            ConfigManager.getInstance().showHealthInRPC = checked;
-            ConfigManager.save();
-        }));
+                    ConfigManager.getInstance().showHealthInRPC = checked;
+                    ConfigManager.save();
+                }));
 
-        updateRPCDetailsEnabled(ConfigManager.getInstance().enableDiscordRPC);
+        applySubSettingsState(ConfigManager.getInstance().enableDiscordRPC);
 
-        return scrollView;
+        return scroll;
     }
 
-    private void updateRPCDetailsEnabled(boolean enabled) {
-        for (View v : rpcDetailViews) {
-            v.setEnabled(enabled);
-            v.setAlpha(enabled ? 1.0f : 0.5f);
-            if (v instanceof ViewGroup) {
-                setChildrenEnabled((ViewGroup) v, enabled);
-            }
-        }
+    private void animateSubSettingsState(boolean enabled) {
+        float targetAlpha = enabled ? 1.0f : 0.4f;
+        ObjectAnimator.ofFloat(subSettingsGroup, View.ALPHA, subSettingsGroup.getAlpha(), targetAlpha).setDuration(250).start();
+        setChildrenEnabled(subSettingsGroup, enabled);
     }
 
-    private void setChildrenEnabled(ViewGroup vg, boolean enabled) {
-        for (int i = 0; i < vg.getChildCount(); i++) {
-            View child = vg.getChildAt(i);
+    private void applySubSettingsState(boolean enabled) {
+        subSettingsGroup.setAlpha(enabled ? 1.0f : 0.4f);
+        setChildrenEnabled(subSettingsGroup, enabled);
+    }
+
+    private void setChildrenEnabled(ViewGroup group, boolean enabled) {
+        for (int i = 0; i < group.getChildCount(); i++) {
+            View child = group.getChildAt(i);
             child.setEnabled(enabled);
-            if (child instanceof ViewGroup) {
-                setChildrenEnabled((ViewGroup) child, enabled);
-            }
+            if (child instanceof ViewGroup vg) setChildrenEnabled(vg, enabled);
         }
     }
 
-    private View addSwitchRow(LinearLayout parent, String title, String desc, boolean checked, Switch.OnCheckedChangeListener listener) {
-        LinearLayout card = createSettingCard(title, desc);
-        Switch s = new Switch(getContext());
-        s.setChecked(checked);
-        s.setOnCheckedChangeListener(listener);
-        card.addView(s);
-        parent.addView(card);
-        return card;
+    @Override
+    public void onViewCreated(View view, DataSet savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        animateChildren(contentLayout);
     }
 }

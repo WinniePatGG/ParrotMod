@@ -1,45 +1,49 @@
 package de.winniepat.parrotmod.ui;
 
 import de.winniepat.parrotmod.config.ConfigManager;
+import de.winniepat.parrotmod.ui.util.ParrotTheme;
 import icyllis.modernui.util.DataSet;
 import icyllis.modernui.view.LayoutInflater;
 import icyllis.modernui.view.View;
 import icyllis.modernui.view.ViewGroup;
-import icyllis.modernui.widget.Button;
 import icyllis.modernui.widget.LinearLayout;
-import net.minecraft.client.Minecraft;
+import icyllis.modernui.widget.ScrollView;
 
 public class GeneralTabFragment extends BaseTabFragment {
 
+    private LinearLayout contentLayout;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, DataSet savedInstanceData) {
-        LinearLayout layout = new LinearLayout(getContext());
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(dp(28), dp(24), dp(28), dp(24));
+        ScrollView scroll = new ScrollView(getContext());
 
-        addTabHeader(layout, "Client Settings", "Configure your client-side experience and mod data.");
+        contentLayout = new LinearLayout(getContext());
+        contentLayout.setOrientation(LinearLayout.VERTICAL);
+        contentLayout.setPadding(ParrotTheme.dp(40), ParrotTheme.dp(40), ParrotTheme.dp(40), ParrotTheme.dp(40));
+        scroll.addView(contentLayout);
 
-        addSectionHeader(layout, "Information");
-        layout.addView(createSettingCard("Version", "Running on Minecraft " + Minecraft.getInstance().getLaunchedVersion()));
+        addPageHeader(contentLayout, "Client Settings", "Customize your gameplay experience.");
 
-        addSectionHeader(layout, "Data Management");
+        addSectionLabel(contentLayout, "Interface");
 
-        LinearLayout reloadCard = createSettingCard("Reload configuration", "Discard unsaved changes and reload from disk.");
-        Button reloadBtn = new Button(getContext());
-        reloadBtn.setText("Reload");
-        reloadBtn.setPadding(dp(16), 0, dp(16), 0);
-        reloadBtn.setOnClickListener(v -> ConfigManager.load());
-        reloadCard.addView(reloadBtn);
-        layout.addView(reloadCard);
+        contentLayout.addView(createToggleCard("Smooth Animations", "Enable fluid transitions across the mod GUI.",
+                ConfigManager.getInstance().enableSmoothUI, (v, checked) -> {
+                    ConfigManager.getInstance().enableSmoothUI = checked;
+                    ConfigManager.save();
+                }));
 
-        LinearLayout saveCard = createSettingCard("Commit changes", "Save all current settings to the configuration file.");
-        Button saveBtn = new Button(getContext());
-        saveBtn.setText("Save");
-        saveBtn.setPadding(dp(16), 0, dp(16), 0);
-        saveBtn.setOnClickListener(v -> ConfigManager.save());
-        saveCard.addView(saveBtn);
-        layout.addView(saveCard);
+        contentLayout.addView(createToggleCard("Compact Mode", "Reduce padding to show more information at once.",
+                ConfigManager.getInstance().enableCompactMode, (v, checked) -> {
+                    ConfigManager.getInstance().enableCompactMode = checked;
+                    ConfigManager.save();
+                }));
 
-        return layout;
+        return scroll;
+    }
+
+    @Override
+    public void onViewCreated(View view, DataSet savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        animateChildren(contentLayout);
     }
 }

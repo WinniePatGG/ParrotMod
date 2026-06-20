@@ -1,130 +1,98 @@
 package de.winniepat.parrotmod.ui;
 
+import de.winniepat.parrotmod.ui.util.ParrotTheme;
 import icyllis.modernui.animation.ObjectAnimator;
 import icyllis.modernui.fragment.Fragment;
-import icyllis.modernui.graphics.drawable.ShapeDrawable;
 import icyllis.modernui.view.Gravity;
 import icyllis.modernui.view.View;
 import icyllis.modernui.view.ViewGroup;
 import icyllis.modernui.widget.LinearLayout;
+import icyllis.modernui.widget.Switch;
 import icyllis.modernui.widget.TextView;
 
 public abstract class BaseTabFragment extends Fragment {
 
-    protected static final int COLOR_CARD = 0xFF23232D;
-    protected static final int COLOR_ACCENT = 0xFF5CF392;
-    protected static final int COLOR_ACCENT_DIM = 0xFF3E8E5A;
-    protected static final int COLOR_TEXT_MAIN = 0xFFF0F0F0;
-    protected static final int COLOR_TEXT_SEC = 0xFF9EA3AF;
-    protected static final int COLOR_CARD_BORDER = 0x265CF392;
+    protected void animateChildren(ViewGroup group) {
+        for (int i = 0; i < group.getChildCount(); i++) {
+            View child = group.getChildAt(i);
+            child.setAlpha(0);
+            child.setTranslationX(ParrotTheme.dp(20));
 
-    protected int dp(float dp) {
-        return (int) (dp * getContext().getResources().getDisplayMetrics().density);
+            ObjectAnimator alpha = ObjectAnimator.ofFloat(child, View.ALPHA, 0, 1);
+            alpha.setDuration(400);
+            alpha.setStartDelay(i * 40L);
+            alpha.start();
+
+            ObjectAnimator slide = ObjectAnimator.ofFloat(child, View.TRANSLATION_X, ParrotTheme.dp(20), 0);
+            slide.setDuration(500);
+            slide.setStartDelay(i * 40L);
+            slide.start();
+        }
     }
 
-    protected TextView makeLabel(String text) {
-        TextView tv = new TextView(getContext());
-        tv.setText(text);
-        tv.setTextSize(14);
-        tv.setTextColor(COLOR_TEXT_MAIN);
-        var p = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        p.topMargin = dp(12);
-        p.bottomMargin = dp(4);
-        tv.setLayoutParams(p);
-        return tv;
+    protected void addPageHeader(LinearLayout parent, String title, String subtitle) {
+        LinearLayout headerBox = new LinearLayout(getContext());
+        headerBox.setOrientation(LinearLayout.VERTICAL);
+        headerBox.setPadding(0, 0, 0, ParrotTheme.dp(24));
+
+        TextView titleView = new TextView(getContext());
+        titleView.setText(title);
+        titleView.setTextSize(28);
+        titleView.setTextColor(ParrotTheme.TEXT_TITLE);
+        headerBox.addView(titleView);
+
+        TextView subView = new TextView(getContext());
+        subView.setText(subtitle);
+        subView.setTextSize(14);
+        subView.setTextColor(ParrotTheme.NEON_ACCENT);
+        headerBox.addView(subView);
+
+        parent.addView(headerBox);
     }
 
-    protected void addSectionHeader(LinearLayout parent, String title) {
+    protected void addSectionLabel(LinearLayout parent, String title) {
         TextView tv = new TextView(getContext());
         tv.setText(title.toUpperCase());
-        tv.setTextSize(11);
-        tv.setTextColor(COLOR_ACCENT);
+        tv.setTextSize(12);
+        tv.setTextColor(ParrotTheme.TEXT_SUBTITLE);
         var p = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        p.topMargin = dp(24);
-        p.bottomMargin = dp(10);
-        p.leftMargin = dp(4);
+        p.topMargin = ParrotTheme.dp(16);
+        p.bottomMargin = ParrotTheme.dp(12);
         parent.addView(tv, p);
     }
 
-    protected void addTabHeader(LinearLayout parent, String title, String description) {
-        TextView titleView = new TextView(getContext());
-        titleView.setText(title);
-        titleView.setTextSize(24);
-        titleView.setTextColor(0xFFFFFFFF);
-        titleView.setPadding(0, 0, 0, dp(2));
-        parent.addView(titleView);
-
-        if (description != null) {
-            TextView descView = new TextView(getContext());
-            descView.setText(description);
-            descView.setTextSize(13);
-            descView.setTextColor(COLOR_TEXT_SEC);
-            descView.setPadding(0, 0, 0, dp(16));
-            parent.addView(descView);
-        }
-
-        View divider = new View(getContext());
-        var divParams = new LinearLayout.LayoutParams(dp(40), dp(3));
-        divParams.bottomMargin = dp(16);
-        divider.setLayoutParams(divParams);
-        divider.setBackground(makeRoundedBg(COLOR_ACCENT, 2));
-        parent.addView(divider);
-    }
-
-    protected LinearLayout createSettingCard(String title, String description) {
+    protected LinearLayout createToggleCard(String title, String desc, boolean isChecked, Switch.OnCheckedChangeListener listener) {
         LinearLayout card = new LinearLayout(getContext());
         card.setOrientation(LinearLayout.HORIZONTAL);
         card.setGravity(Gravity.CENTER_VERTICAL);
-        card.setPadding(dp(18), dp(14), dp(18), dp(14));
-        card.setBackground(makeBorderedBg(COLOR_CARD, COLOR_CARD_BORDER, 10, 1));
+        card.setPadding(ParrotTheme.dp(20), ParrotTheme.dp(16), ParrotTheme.dp(20), ParrotTheme.dp(16));
+        card.setBackground(ParrotTheme.createCard(12));
 
         var cardParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        cardParams.bottomMargin = dp(10);
+        cardParams.bottomMargin = ParrotTheme.dp(12);
         card.setLayoutParams(cardParams);
 
         LinearLayout textLayout = new LinearLayout(getContext());
         textLayout.setOrientation(LinearLayout.VERTICAL);
-        var textParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
-        card.addView(textLayout, textParams);
+        card.addView(textLayout, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 
         TextView titleView = new TextView(getContext());
         titleView.setText(title);
-        titleView.setTextSize(15.5f);
-        titleView.setTextColor(COLOR_TEXT_MAIN);
+        titleView.setTextSize(16);
+        titleView.setTextColor(ParrotTheme.TEXT_TITLE);
         textLayout.addView(titleView);
 
-        if (description != null) {
-            TextView descView = new TextView(getContext());
-            descView.setText(description);
-            descView.setTextSize(12.5f);
-            descView.setTextColor(COLOR_TEXT_SEC);
-            textLayout.addView(descView);
-        }
+        TextView descView = new TextView(getContext());
+        descView.setText(desc);
+        descView.setTextSize(13);
+        descView.setTextColor(ParrotTheme.TEXT_SUBTITLE);
+        textLayout.addView(descView);
+
+        Switch toggle = new Switch(getContext());
+        toggle.setChecked(isChecked);
+        toggle.setOnCheckedChangeListener(listener);
+        card.addView(toggle);
 
         return card;
-    }
-
-    protected ShapeDrawable makeRoundedBg(int color, float radius) {
-        ShapeDrawable d = new ShapeDrawable();
-        d.setCornerRadius(dp(radius));
-        d.setColor(color);
-        return d;
-    }
-
-    protected ShapeDrawable makeBorderedBg(int color, int strokeColor, float radius, float strokeWidth) {
-        ShapeDrawable d = new ShapeDrawable();
-        d.setCornerRadius(dp(radius));
-        d.setColor(color);
-        d.setStroke(dp(strokeWidth), strokeColor);
-        return d;
-    }
-
-    @Override
-    public void onViewCreated(View view, icyllis.modernui.util.DataSet savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        view.setAlpha(0);
-        view.setTranslationY(dp(10));
-        ObjectAnimator.ofFloat(view, View.ALPHA, 0, 1).setDuration(400).start();
-        ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, dp(10), 0).setDuration(400).start();
     }
 }

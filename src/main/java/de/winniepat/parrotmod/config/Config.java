@@ -5,4 +5,6 @@ public class Config {
     public boolean showBiomeInRPC = true;
     public boolean showHeldItemInRPC = true;
     public boolean showHealthInRPC = true;
+    public boolean enableSmoothUI = true;
+    public boolean enableCompactMode = false;
 }
