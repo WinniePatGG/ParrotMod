@@ -15,23 +15,26 @@ public class GeneralTabFragment extends BaseTabFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, DataSet savedInstanceData) {
         LinearLayout layout = new LinearLayout(getContext());
         layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(dp(20), dp(20), dp(20), dp(20));
+        layout.setPadding(dp(24), dp(8), dp(24), dp(24));
 
-        layout.addView(makeLabel("Minecraft Version: " + Minecraft.getInstance().getLaunchedVersion()));
+        addSectionHeader(layout, "Client Info");
+        layout.addView(createSettingCard("Minecraft Version", Minecraft.getInstance().getLaunchedVersion()));
 
+        addSectionHeader(layout, "Config Management");
+
+        LinearLayout reloadCard = createSettingCard("Reload Config", "Reset all settings to saved values");
         Button reloadBtn = new Button(getContext());
-        reloadBtn.setText("Reload Config");
+        reloadBtn.setText("Reload");
         reloadBtn.setOnClickListener(v -> ConfigManager.load());
-        var p = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        p.topMargin = dp(24);
-        layout.addView(reloadBtn, p);
+        reloadCard.addView(reloadBtn);
+        layout.addView(reloadCard);
 
+        LinearLayout saveCard = createSettingCard("Save Config", "Persist current settings to disk");
         Button saveBtn = new Button(getContext());
-        saveBtn.setText("Save Config");
+        saveBtn.setText("Save");
         saveBtn.setOnClickListener(v -> ConfigManager.save());
-        var p2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        p2.topMargin = dp(12);
-        layout.addView(saveBtn, p2);
+        saveCard.addView(saveBtn);
+        layout.addView(saveCard);
 
         return layout;
     }
