@@ -15,23 +15,27 @@ public class GeneralTabFragment extends BaseTabFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, DataSet savedInstanceData) {
         LinearLayout layout = new LinearLayout(getContext());
         layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(dp(24), dp(8), dp(24), dp(24));
+        layout.setPadding(dp(28), dp(24), dp(28), dp(24));
 
-        addSectionHeader(layout, "Client Info");
-        layout.addView(createSettingCard("Minecraft Version", Minecraft.getInstance().getLaunchedVersion()));
+        addTabHeader(layout, "Client Settings", "Configure your client-side experience and mod data.");
 
-        addSectionHeader(layout, "Config Management");
+        addSectionHeader(layout, "Information");
+        layout.addView(createSettingCard("Version", "Running on Minecraft " + Minecraft.getInstance().getLaunchedVersion()));
 
-        LinearLayout reloadCard = createSettingCard("Reload Config", "Reset all settings to saved values");
+        addSectionHeader(layout, "Data Management");
+
+        LinearLayout reloadCard = createSettingCard("Reload configuration", "Discard unsaved changes and reload from disk.");
         Button reloadBtn = new Button(getContext());
         reloadBtn.setText("Reload");
+        reloadBtn.setPadding(dp(16), 0, dp(16), 0);
         reloadBtn.setOnClickListener(v -> ConfigManager.load());
         reloadCard.addView(reloadBtn);
         layout.addView(reloadCard);
 
-        LinearLayout saveCard = createSettingCard("Save Config", "Persist current settings to disk");
+        LinearLayout saveCard = createSettingCard("Commit changes", "Save all current settings to the configuration file.");
         Button saveBtn = new Button(getContext());
         saveBtn.setText("Save");
+        saveBtn.setPadding(dp(16), 0, dp(16), 0);
         saveBtn.setOnClickListener(v -> ConfigManager.save());
         saveCard.addView(saveBtn);
         layout.addView(saveCard);

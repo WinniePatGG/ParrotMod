@@ -12,18 +12,20 @@ import net.fabricmc.loader.api.FabricLoader;
 
 public class SettingsFragment extends Fragment {
 
-    private static final int COLOR_BACKGROUND = 0xFF0F0F13;
-    private static final int COLOR_SIDEBAR = 0xFF15151B;
-    private static final int COLOR_ACCENT = 0xFF00E5FF;
-    private static final int COLOR_TEXT_DIM = 0xFFAAAAAA;
+    private static final int COLOR_BACKGROUND = 0xFF18181F;
+    private static final int COLOR_SIDEBAR = 0xFF121217;
+    private static final int COLOR_ACCENT = 0xFF5CF392;
+    private static final int COLOR_TEXT_DIM = 0xFF9EA3AF;
+    private static final int COLOR_TAB_SELECTED = 0x125CF392;
+    private static final int COLOR_BORDER = 0x1AFFFFFF;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, DataSet savedInstanceState) {
         FrameLayout root = new FrameLayout(getContext());
-        root.setLayoutParams(new FrameLayout.LayoutParams(dp(720), dp(480), Gravity.CENTER));
+        root.setLayoutParams(new FrameLayout.LayoutParams(dp(760), dp(520), Gravity.CENTER));
 
         View bg = new View(getContext());
-        bg.setBackground(makeRoundedBg(COLOR_BACKGROUND, 16));
+        bg.setBackground(makeBorderedBg(COLOR_BACKGROUND, COLOR_BORDER, 14, 1.2f));
         root.addView(bg);
 
         LinearLayout layout = new LinearLayout(getContext());
@@ -31,26 +33,37 @@ public class SettingsFragment extends Fragment {
         root.addView(layout);
 
         FrameLayout sidebarContainer = new FrameLayout(getContext());
-        var sidebarParams = new LinearLayout.LayoutParams(dp(170), ViewGroup.LayoutParams.MATCH_PARENT);
+        var sidebarParams = new LinearLayout.LayoutParams(dp(190), ViewGroup.LayoutParams.MATCH_PARENT);
         layout.addView(sidebarContainer, sidebarParams);
 
         View sidebarBg = new View(getContext());
-        sidebarBg.setBackground(makeRoundedBg(COLOR_SIDEBAR, 16));
+        sidebarBg.setBackground(makeRoundedBg(COLOR_SIDEBAR, 14));
         sidebarContainer.addView(sidebarBg);
 
         LinearLayout sidebarContent = new LinearLayout(getContext());
         sidebarContent.setOrientation(LinearLayout.VERTICAL);
-        sidebarContent.setPadding(0, dp(24), 0, dp(16));
+        sidebarContent.setPadding(0, dp(28), 0, dp(16));
         sidebarContainer.addView(sidebarContent, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        View separator = new View(getContext());
+        var sepParams = new LinearLayout.LayoutParams(dp(1), ViewGroup.LayoutParams.MATCH_PARENT);
+        separator.setOutlineAmbientShadowColor(COLOR_BORDER);
+        layout.addView(separator, sepParams);
+
+        LinearLayout titleLayout = new LinearLayout(getContext());
+        titleLayout.setOrientation(LinearLayout.VERTICAL);
+        titleLayout.setGravity(Gravity.CENTER);
+        titleLayout.setPadding(0, 0, 0, dp(32));
 
         TextView title = new TextView(getContext());
         title.setText("PARROT");
         title.setTextSize(22);
         title.setGravity(Gravity.CENTER);
         title.setTextColor(COLOR_ACCENT);
-        title.setPadding(dp(16), 0, dp(16), dp(32));
-        sidebarContent.addView(title);
+        titleLayout.addView(title);
+
+        sidebarContent.addView(titleLayout);
 
         FrameLayout tabsContainer = new FrameLayout(getContext());
         sidebarContent.addView(tabsContainer, new LinearLayout.LayoutParams(
@@ -58,8 +71,9 @@ public class SettingsFragment extends Fragment {
 
         LinearLayout tabsLayout = new LinearLayout(getContext());
         tabsLayout.setOrientation(LinearLayout.VERTICAL);
+        tabsLayout.setPadding(dp(12), 0, dp(12), 0);
         tabsContainer.addView(tabsLayout, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP));
 
 
         FrameLayout contentArea = new FrameLayout(getContext());
@@ -74,56 +88,72 @@ public class SettingsFragment extends Fragment {
                 new DiscordTabFragment()
         };
 
-        Button[] tabButtons = new Button[tabNames.length];
+        View[] tabContainers = new View[tabNames.length];
+        View[] indicators = new View[tabNames.length];
+        TextView[] textViews = new TextView[tabNames.length];
+
         for (int i = 0; i < tabNames.length; i++) {
             final int index = i;
-            Button tab = new Button(getContext());
-            tab.setText(tabNames[index]);
-            tab.setTextSize(14);
-            tab.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
-            tab.setPadding(dp(32), 0, dp(16), 0);
-            tab.setBackground(null);
-            tab.setTextColor(COLOR_TEXT_DIM);
+            
+            FrameLayout tabContainer = new FrameLayout(getContext());
+            
+            View indicator = new View(getContext());
+            indicator.setBackground(makeRoundedBg(COLOR_ACCENT, 2));
+            indicator.setVisibility(View.INVISIBLE);
+            var indParams = new FrameLayout.LayoutParams(dp(3), dp(18), Gravity.START | Gravity.CENTER_VERTICAL);
+            tabContainer.addView(indicator, indParams);
 
-            tab.setOnClickListener(v -> {
+            TextView tabText = new TextView(getContext());
+            tabText.setText(tabNames[index]);
+            tabText.setTextSize(14);
+            tabText.setPadding(dp(24), 0, dp(16), 0);
+            tabText.setTextColor(COLOR_TEXT_DIM);
+            tabText.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+            tabContainer.addView(tabText, new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, dp(40)));
+
+            tabContainer.setOnClickListener(v -> {
                 getChildFragmentManager().beginTransaction()
                         .setReorderingAllowed(true)
                         .replace(contentArea.getId(), tabFragments[index])
                         .commit();
 
-                for (int j = 0; j < tabButtons.length; j++) {
+                for (int j = 0; j < tabNames.length; j++) {
                     boolean selected = (j == index);
-                    tabButtons[j].setTextColor(selected ? 0xFFFFFFFF : COLOR_TEXT_DIM);
-                    tabButtons[j].setBackground(selected ? makeRoundedBg(0x12FFFFFF, 8) : null);
+                    textViews[j].setTextColor(selected ? 0xFFFFFFFF : COLOR_TEXT_DIM);
+                    tabContainers[j].setBackground(selected ? makeRoundedBg(COLOR_TAB_SELECTED, 8) : null);
+                    indicators[j].setVisibility(selected ? View.VISIBLE : View.INVISIBLE);
                 }
-
             });
 
-            var tabParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(44));
-            tabParams.bottomMargin = dp(4);
-            tabsLayout.addView(tab, tabParams);
-            tabButtons[index] = tab;
+            var tabParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(40));
+            tabParams.bottomMargin = dp(6);
+            tabsLayout.addView(tabContainer, tabParams);
+            
+            tabContainers[index] = tabContainer;
+            indicators[index] = indicator;
+            textViews[index] = tabText;
         }
 
         TextView footer = new TextView(getContext());
         String version = FabricLoader.getInstance().getModContainer("parrotmod")
                 .map(m -> m.getMetadata().getVersion().getFriendlyString()).orElse("?.?.?");
-        footer.setText("ParrotMod v" + version);
-        footer.setTextSize(11);
-        footer.setTextColor(0x44FFFFFF);
+        footer.setText("v" + version);
+        footer.setTextSize(10);
+        footer.setTextColor(0x33FFFFFF);
         footer.setGravity(Gravity.CENTER);
         footer.setPadding(dp(16), dp(12), dp(16), dp(12));
         sidebarContent.addView(footer);
 
         root.setAlpha(0);
-        root.setScaleX(0.96f);
-        root.setScaleY(0.96f);
-        ObjectAnimator.ofFloat(root, View.ALPHA, 0, 1).setDuration(450).start();
-        ObjectAnimator.ofFloat(root, View.SCALE_X, 0.96f, 1).setDuration(450).start();
-        ObjectAnimator.ofFloat(root, View.SCALE_Y, 0.96f, 1).setDuration(450).start();
+        root.setScaleX(0.98f);
+        root.setScaleY(0.98f);
+        ObjectAnimator.ofFloat(root, View.ALPHA, 0, 1).setDuration(350).start();
+        ObjectAnimator.ofFloat(root, View.SCALE_X, 0.98f, 1).setDuration(350).start();
+        ObjectAnimator.ofFloat(root, View.SCALE_Y, 0.98f, 1).setDuration(350).start();
 
         root.post(() -> {
-            tabButtons[0].callOnClick();
+            tabContainers[0].callOnClick();
         });
 
         return root;
@@ -137,6 +167,14 @@ public class SettingsFragment extends Fragment {
         ShapeDrawable d = new ShapeDrawable();
         d.setCornerRadius(dp(radius));
         d.setColor(color);
+        return d;
+    }
+
+    private ShapeDrawable makeBorderedBg(int color, int strokeColor, float radius, float strokeWidth) {
+        ShapeDrawable d = new ShapeDrawable();
+        d.setCornerRadius(dp(radius));
+        d.setColor(color);
+        d.setStroke(dp(strokeWidth), strokeColor);
         return d;
     }
 }

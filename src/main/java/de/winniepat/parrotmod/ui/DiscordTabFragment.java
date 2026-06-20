@@ -21,33 +21,35 @@ public class DiscordTabFragment extends BaseTabFragment {
 
         LinearLayout layout = new LinearLayout(getContext());
         layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(dp(24), dp(8), dp(24), dp(24));
+        layout.setPadding(dp(28), dp(24), dp(28), dp(24));
         scrollView.addView(layout);
 
-        addSectionHeader(layout, "Discord Integration");
+        addTabHeader(layout, "Discord Rich Presence", "Connect your Minecraft activity to your Discord profile.");
 
-        addSwitchRow(layout, "Enable DiscordRPC", "Show your game status on Discord",
+        addSectionHeader(layout, "Core Integration");
+
+        addSwitchRow(layout, "Status Integration", "Toggle Discord Rich Presence globally.",
                 ConfigManager.getInstance().enableDiscordRPC, (v, checked) -> {
             ConfigManager.getInstance().enableDiscordRPC = checked;
             ConfigManager.save();
             updateRPCDetailsEnabled(checked);
         });
 
-        addSectionHeader(layout, "RPC Details");
+        addSectionHeader(layout, "Status Customization");
 
-        rpcDetailViews.add(addSwitchRow(layout, "Show Biome", "Display current biome in status",
+        rpcDetailViews.add(addSwitchRow(layout, "Location Tracking", "Broadcast your current biome.",
                 ConfigManager.getInstance().showBiomeInRPC, (v, checked) -> {
             ConfigManager.getInstance().showBiomeInRPC = checked;
             ConfigManager.save();
         }));
 
-        rpcDetailViews.add(addSwitchRow(layout, "Show Held Item", "Display what you are holding",
+        rpcDetailViews.add(addSwitchRow(layout, "Equipment Status", "Show your currently held items.",
                 ConfigManager.getInstance().showHeldItemInRPC, (v, checked) -> {
             ConfigManager.getInstance().showHeldItemInRPC = checked;
             ConfigManager.save();
         }));
 
-        rpcDetailViews.add(addSwitchRow(layout, "Show Health", "Display your current HP",
+        rpcDetailViews.add(addSwitchRow(layout, "Vitality Info", "Display your current health status.",
                 ConfigManager.getInstance().showHealthInRPC, (v, checked) -> {
             ConfigManager.getInstance().showHealthInRPC = checked;
             ConfigManager.save();

@@ -18,28 +18,30 @@ public class InfoTabFragment extends BaseTabFragment {
 
         LinearLayout layout = new LinearLayout(getContext());
         layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(dp(24), dp(8), dp(24), dp(24));
+        layout.setPadding(dp(28), dp(24), dp(28), dp(24));
         scrollView.addView(layout);
 
-        addSectionHeader(layout, "Mod Versions");
+        addTabHeader(layout, "System Overview", "Detailed information about your environment and mod versions.");
+
+        addSectionHeader(layout, "Software Manifest");
         String parrotVersion = FabricLoader.getInstance().getModContainer("parrotmod").orElseThrow().getMetadata().getVersion().getFriendlyString();
-        layout.addView(createSettingCard("Parrotmod", parrotVersion));
+        layout.addView(createSettingCard("ParrotMod", "Stable Build v" + parrotVersion));
 
         String mcVersion = FabricLoader.getInstance().getModContainer("minecraft").orElseThrow().getMetadata().getVersion().getFriendlyString();
-        layout.addView(createSettingCard("Minecraft", Minecraft.getInstance().getLaunchedVersion() + " (" + mcVersion + ")"));
+        layout.addView(createSettingCard("Minecraft Engine", Minecraft.getInstance().getLaunchedVersion() + " (" + mcVersion + ")"));
 
         String loaderVersion = FabricLoader.getInstance().getModContainer("fabricloader").orElseThrow().getMetadata().getVersion().getFriendlyString();
-        layout.addView(createSettingCard("Fabric Loader", loaderVersion));
+        layout.addView(createSettingCard("Fabric Loader", "Build " + loaderVersion));
 
-        addSectionHeader(layout, "System Info");
-        layout.addView(createSettingCard("Java", System.getProperty("java.version") + " (" + System.getProperty("os.arch") + ")"));
-        layout.addView(createSettingCard("OS", System.getProperty("os.name") + " (" + System.getProperty("os.version") + ")"));
+        addSectionHeader(layout, "Runtime Environment");
+        layout.addView(createSettingCard("Java Runtime", System.getProperty("java.version") + " [" + System.getProperty("os.arch") + "]"));
+        layout.addView(createSettingCard("Operating System", System.getProperty("os.name") + " [" + System.getProperty("os.version") + "]"));
 
         long maxMemory = Runtime.getRuntime().maxMemory();
         long totalMemory = Runtime.getRuntime().totalMemory();
         long freeMemory = Runtime.getRuntime().freeMemory();
         long usedMemory = totalMemory - freeMemory;
-        layout.addView(createSettingCard("Memory Usage", String.format("%dMB / %dMB", usedMemory / 1024 / 1024, maxMemory / 1024 / 1024)));
+        layout.addView(createSettingCard("Memory Allocation", String.format("%d MiB / %d MiB in use", usedMemory / 1024 / 1024, maxMemory / 1024 / 1024)));
 
         return scrollView;
     }
