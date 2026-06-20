@@ -1,5 +1,6 @@
 package de.winniepat.parrotmod.ui;
 
+import de.winniepat.parrotmod.config.ConfigManager;
 import icyllis.modernui.fragment.Fragment;
 import icyllis.modernui.util.DataSet;
 import icyllis.modernui.view.LayoutInflater;
@@ -8,7 +9,6 @@ import icyllis.modernui.view.ViewGroup;
 import icyllis.modernui.widget.LinearLayout;
 import icyllis.modernui.widget.Switch;
 import icyllis.modernui.widget.TextView;
-import net.minecraft.client.Minecraft;
 
 public class DiscordTabFragment extends Fragment {
 
@@ -20,12 +20,39 @@ public class DiscordTabFragment extends Fragment {
 
         layout.addView(makeLabel("Enable DiscordRPC"));
         Switch toggleDiscordRPC = new Switch(getContext());
-        toggleDiscordRPC.setChecked(true); // TODO: load from config
+        toggleDiscordRPC.setChecked(ConfigManager.getInstance().enableDiscordRPC);
         toggleDiscordRPC.setOnCheckedChangeListener((v, checked) -> {
-            // TODO: save to config
-            // MyConfig.enableDiscordRPC = checked;
+            ConfigManager.getInstance().enableDiscordRPC = checked;
+            ConfigManager.save();
         });
         layout.addView(toggleDiscordRPC);
+
+        layout.addView(makeLabel("Show Biome in RPC"));
+        Switch toggleBiome = new Switch(getContext());
+        toggleBiome.setChecked(ConfigManager.getInstance().showBiomeInRPC);
+        toggleBiome.setOnCheckedChangeListener((v, checked) -> {
+            ConfigManager.getInstance().showBiomeInRPC = checked;
+            ConfigManager.save();
+        });
+        layout.addView(toggleBiome);
+
+        layout.addView(makeLabel("Show Held Item in RPC"));
+        Switch toggleHeldItem = new Switch(getContext());
+        toggleHeldItem.setChecked(ConfigManager.getInstance().showHeldItemInRPC);
+        toggleHeldItem.setOnCheckedChangeListener((v, checked) -> {
+            ConfigManager.getInstance().showHeldItemInRPC = checked;
+            ConfigManager.save();
+        });
+        layout.addView(toggleHeldItem);
+
+        layout.addView(makeLabel("Show Health in RPC"));
+        Switch toggleHealth = new Switch(getContext());
+        toggleHealth.setChecked(ConfigManager.getInstance().showHealthInRPC);
+        toggleHealth.setOnCheckedChangeListener((v, checked) -> {
+            ConfigManager.getInstance().showHealthInRPC = checked;
+            ConfigManager.save();
+        });
+        layout.addView(toggleHealth);
 
         return layout;
     }

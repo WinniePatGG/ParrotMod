@@ -34,10 +34,11 @@ public class SettingsFragment extends Fragment {
         contentParams.leftMargin = dp(6);
         root.addView(contentArea, contentParams);
 
-        String[] tabNames = {"Info", "General"};
+        String[] tabNames = {"Info", "General", "Discord"};
         Fragment[] tabFragments = {
                 new InfoTabFragment(),
-                new GeneralTabFragment()
+                new GeneralTabFragment(),
+                new DiscordTabFragment()
         };
 
         getChildFragmentManager().beginTransaction()

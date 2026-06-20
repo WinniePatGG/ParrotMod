@@ -8,6 +8,7 @@ import com.jagrosh.discordipc.entities.Packet;
 import com.jagrosh.discordipc.entities.RichPresence;
 import com.jagrosh.discordipc.entities.User;
 import com.jagrosh.discordipc.exceptions.NoDiscordClientException;
+import de.winniepat.parrotmod.config.ConfigManager;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
 
@@ -16,7 +17,6 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class DiscordRPCManager {
-    private static final long APPLICATION_ID = 1517985621396820039L;
     private static final long UPDATE_COOLDOWN_MS = 15_000;
 
     private static IPCClient client;
@@ -47,7 +47,27 @@ public class DiscordRPCManager {
     private DiscordRPCManager() {}
 
     public static void init() {
-        client = new IPCClient(APPLICATION_ID);
+        ConfigManager.registerListener(cfg -> {
+            if (cfg.enableDiscordRPC) {
+                if (!connected && client == null) {
+                    startClient();
+                }
+            } else {
+                if (client != null) {
+                    shutdown();
+                    client = null;
+                    connected = false;
+                }
+            }
+        });
+
+        if (ConfigManager.getInstance().enableDiscordRPC) {
+            startClient();
+        }
+    }
+
+    private static void startClient() {
+        client = new IPCClient(ConfigManager.getInstance().discordAppId);
         client.setListener(new IPCListener() {
             @Override
             public void onPacketSent(IPCClient client, Packet packet) {
@@ -109,6 +129,7 @@ public class DiscordRPCManager {
     }
 
     private static void updateFromPlayer(LocalPlayer player) {
+        var cfg = ConfigManager.getInstance();
         String dimension = player.level().dimension().registry().getPath();
         String biomeName = player.level().getBiome(player.blockPosition())
                 .unwrapKey()
@@ -117,12 +138,27 @@ public class DiscordRPCManager {
         ItemStack held = player.getMainHandItem();
         String heldName = held.isEmpty() ? "empty hands" : held.getHoverName().getString();
 
-        String details = switch (dimension) {
-            case "the_nether" -> "Surviving the Nether";
-            case "the_end" -> "Facing the End";
-            default -> "Exploring the " + prettify(biomeName);
-        };
-        String state = "Wielding " + heldName + " · " + (int) player.getHealth() + " HP";
+        String details;
+        if (cfg.showBiomeInRPC) {
+            details = switch (dimension) {
+                case "the_nether" -> "Surviving the Nether";
+                case "the_end" -> "Facing the End";
+                default -> "Exploring the " + prettify(biomeName);
+            };
+        } else {
+            details = "Playing Minecraft";
+        }
+
+        StringBuilder stateBuilder = new StringBuilder();
+        if (cfg.showHeldItemInRPC) {
+            stateBuilder.append("Wielding ").append(heldName);
+        }
+        if (cfg.showHealthInRPC) {
+            if (stateBuilder.length() > 0) stateBuilder.append(" · ");
+            stateBuilder.append((int) player.getHealth()).append(" HP");
+        }
+        String state = stateBuilder.toString();
+        if (state.isEmpty()) state = "In-game";
 
         updatePresence(details, state);
     }
@@ -132,7 +168,7 @@ public class DiscordRPCManager {
     }
 
     public static void updatePresence(String details, String state) {
-        if (!connected) return;
+        if (!connected || !ConfigManager.getInstance().enableDiscordRPC) return;
         RichPresence presence = new RichPresence.Builder()
                 .setActivityType(ActivityType.Playing)
                 .setDetails(details)

@@ -1,6 +1,7 @@
 package de.winniepat.parrotmod.ui;
 
 import de.winniepat.parrotmod.Parrotmod;
+import de.winniepat.parrotmod.config.ConfigManager;
 import icyllis.modernui.fragment.Fragment;
 import icyllis.modernui.util.DataSet;
 import icyllis.modernui.view.*;
@@ -16,6 +17,18 @@ public class GeneralTabFragment extends Fragment {
         layout.setPadding(dp(12), dp(12), dp(12), dp(12));
 
         layout.addView(makeLabel("Minecraft Version: " + Minecraft.getInstance().getLaunchedVersion()));
+
+        Button reloadBtn = new Button(getContext());
+        reloadBtn.setText("Reload Config");
+        reloadBtn.setOnClickListener(v -> ConfigManager.load());
+        var p = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        p.topMargin = dp(16);
+        layout.addView(reloadBtn, p);
+
+        Button saveBtn = new Button(getContext());
+        saveBtn.setText("Save Config");
+        saveBtn.setOnClickListener(v -> ConfigManager.save());
+        layout.addView(saveBtn, p);
 
         return layout;
     }
