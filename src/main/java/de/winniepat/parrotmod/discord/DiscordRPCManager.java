@@ -8,10 +8,17 @@ import com.jagrosh.discordipc.entities.Packet;
 import com.jagrosh.discordipc.entities.RichPresence;
 import com.jagrosh.discordipc.entities.User;
 import com.jagrosh.discordipc.exceptions.NoDiscordClientException;
+import com.mojang.authlib.minecraft.client.MinecraftClient;
 import de.winniepat.parrotmod.ParrotLogger;
 import de.winniepat.parrotmod.config.ConfigManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -64,7 +71,7 @@ public class DiscordRPCManager {
     }
 
     private static void startClient() {
-        client = new IPCClient(ConfigManager.getInstance().discordAppId);
+        client = new IPCClient(1517985621396820039L);
         client.setListener(new IPCListener() {
             @Override
             public void onPacketSent(IPCClient client, Packet packet) {
@@ -126,22 +133,23 @@ public class DiscordRPCManager {
     }
 
     private static void updateFromPlayer(LocalPlayer player) {
+        ResourceKey<Level> dimension = player.level().dimension();
+
         var cfg = ConfigManager.getInstance();
-        String dimension = player.level().dimension().registry().getPath();
-        String biomeName = player.level().getBiome(player.blockPosition())
-                .unwrapKey()
-                .map(key -> key.registry().getPath())
-                .orElse("unknown");
         ItemStack held = player.getMainHandItem();
         String heldName = held.isEmpty() ? "empty hands" : held.getHoverName().getString();
 
         String details;
         if (cfg.showBiomeInRPC) {
-            details = switch (dimension) {
-                case "the_nether" -> "Surviving the Nether";
-                case "the_end" -> "Facing the End";
-                default -> "Exploring the " + prettify(biomeName);
-            };
+            if (dimension == Level.OVERWORLD) {
+                details = "Overworld";
+            } else if (dimension == Level.NETHER) {
+                details = "Nether";
+            } else if (dimension == Level.END) {
+                details = "The End";
+            } else {
+                details = "Unknown";
+            }
         } else {
             details = "Playing Minecraft";
         }
