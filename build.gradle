@@ -27,6 +27,8 @@ dependencies {
     implementation "dev.icyllis:modernui-core:${modernui_version}"
     implementation "icyllis.modernui:ModernUI-Markflow:${modernui_version}"
     implementation("icyllis.modernui:ModernUI-Fabric:${minecraft_version}-${modernui_version}.+")
+
+    include(implementation("io.github.CDAGaming:DiscordIPC:0.10.2"))
 }
 
 processResources {
