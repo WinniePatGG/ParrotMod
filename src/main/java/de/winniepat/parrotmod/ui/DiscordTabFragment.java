@@ -1,7 +1,6 @@
 package de.winniepat.parrotmod.ui;
 
 import de.winniepat.parrotmod.config.ConfigManager;
-import icyllis.modernui.fragment.Fragment;
 import icyllis.modernui.util.DataSet;
 import icyllis.modernui.view.LayoutInflater;
 import icyllis.modernui.view.View;
@@ -9,68 +8,59 @@ import icyllis.modernui.view.ViewGroup;
 import icyllis.modernui.widget.LinearLayout;
 import icyllis.modernui.widget.Switch;
 import icyllis.modernui.widget.TextView;
+import icyllis.modernui.view.Gravity;
 
-public class DiscordTabFragment extends Fragment {
+public class DiscordTabFragment extends BaseTabFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, DataSet savedInstanceData) {
         LinearLayout layout = new LinearLayout(getContext());
         layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(dp(12), dp(12), dp(12), dp(12));
+        layout.setPadding(dp(20), dp(20), dp(20), dp(20));
 
-        layout.addView(makeLabel("Enable DiscordRPC"));
-        Switch toggleDiscordRPC = new Switch(getContext());
-        toggleDiscordRPC.setChecked(ConfigManager.getInstance().enableDiscordRPC);
-        toggleDiscordRPC.setOnCheckedChangeListener((v, checked) -> {
+        addSwitch(layout, "Enable DiscordRPC", ConfigManager.getInstance().enableDiscordRPC, (v, checked) -> {
             ConfigManager.getInstance().enableDiscordRPC = checked;
             ConfigManager.save();
         });
-        layout.addView(toggleDiscordRPC);
 
-        layout.addView(makeLabel("Show Biome in RPC"));
-        Switch toggleBiome = new Switch(getContext());
-        toggleBiome.setChecked(ConfigManager.getInstance().showBiomeInRPC);
-        toggleBiome.setOnCheckedChangeListener((v, checked) -> {
+        addSwitch(layout, "Show Biome in RPC", ConfigManager.getInstance().showBiomeInRPC, (v, checked) -> {
             ConfigManager.getInstance().showBiomeInRPC = checked;
             ConfigManager.save();
         });
-        layout.addView(toggleBiome);
 
-        layout.addView(makeLabel("Show Held Item in RPC"));
-        Switch toggleHeldItem = new Switch(getContext());
-        toggleHeldItem.setChecked(ConfigManager.getInstance().showHeldItemInRPC);
-        toggleHeldItem.setOnCheckedChangeListener((v, checked) -> {
+        addSwitch(layout, "Show Held Item in RPC", ConfigManager.getInstance().showHeldItemInRPC, (v, checked) -> {
             ConfigManager.getInstance().showHeldItemInRPC = checked;
             ConfigManager.save();
         });
-        layout.addView(toggleHeldItem);
 
-        layout.addView(makeLabel("Show Health in RPC"));
-        Switch toggleHealth = new Switch(getContext());
-        toggleHealth.setChecked(ConfigManager.getInstance().showHealthInRPC);
-        toggleHealth.setOnCheckedChangeListener((v, checked) -> {
+        addSwitch(layout, "Show Health in RPC", ConfigManager.getInstance().showHealthInRPC, (v, checked) -> {
             ConfigManager.getInstance().showHealthInRPC = checked;
             ConfigManager.save();
         });
-        layout.addView(toggleHealth);
 
         return layout;
     }
 
-    private TextView makeLabel(String text) {
+    private void addSwitch(LinearLayout parent, String label, boolean checked, Switch.OnCheckedChangeListener listener) {
+        LinearLayout row = new LinearLayout(getContext());
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        var rowParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        rowParams.bottomMargin = dp(12);
+        row.setLayoutParams(rowParams);
+
         TextView tv = new TextView(getContext());
-        tv.setText(text);
-        tv.setTextSize(12);
-        tv.setTextColor(0xFFCCCCCC);
-        var p = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        p.topMargin = dp(8);
-        p.bottomMargin = dp(2);
-        tv.setLayoutParams(p);
-        return tv;
-    }
+        tv.setText(label);
+        tv.setTextSize(15);
+        tv.setTextColor(0xFFEEEEEE);
+        var labelParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+        row.addView(tv, labelParams);
 
-    private int dp(float dp) {
-        return (int) (dp * getContext().getResources().getDisplayMetrics().density);
-    }
+        Switch s = new Switch(getContext());
+        s.setChecked(checked);
+        s.setOnCheckedChangeListener(listener);
+        row.addView(s);
 
+        parent.addView(row);
+    }
 }

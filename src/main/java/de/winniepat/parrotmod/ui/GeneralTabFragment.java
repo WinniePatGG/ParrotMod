@@ -1,20 +1,21 @@
 package de.winniepat.parrotmod.ui;
 
-import de.winniepat.parrotmod.Parrotmod;
 import de.winniepat.parrotmod.config.ConfigManager;
-import icyllis.modernui.fragment.Fragment;
 import icyllis.modernui.util.DataSet;
-import icyllis.modernui.view.*;
-import icyllis.modernui.widget.*;
+import icyllis.modernui.view.LayoutInflater;
+import icyllis.modernui.view.View;
+import icyllis.modernui.view.ViewGroup;
+import icyllis.modernui.widget.Button;
+import icyllis.modernui.widget.LinearLayout;
 import net.minecraft.client.Minecraft;
 
-public class GeneralTabFragment extends Fragment {
+public class GeneralTabFragment extends BaseTabFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, DataSet savedInstanceData) {
         LinearLayout layout = new LinearLayout(getContext());
         layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(dp(12), dp(12), dp(12), dp(12));
+        layout.setPadding(dp(20), dp(20), dp(20), dp(20));
 
         layout.addView(makeLabel("Minecraft Version: " + Minecraft.getInstance().getLaunchedVersion()));
 
@@ -22,30 +23,16 @@ public class GeneralTabFragment extends Fragment {
         reloadBtn.setText("Reload Config");
         reloadBtn.setOnClickListener(v -> ConfigManager.load());
         var p = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        p.topMargin = dp(16);
+        p.topMargin = dp(24);
         layout.addView(reloadBtn, p);
 
         Button saveBtn = new Button(getContext());
         saveBtn.setText("Save Config");
         saveBtn.setOnClickListener(v -> ConfigManager.save());
-        layout.addView(saveBtn, p);
+        var p2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        p2.topMargin = dp(12);
+        layout.addView(saveBtn, p2);
 
         return layout;
-    }
-
-    private TextView makeLabel(String text) {
-        TextView tv = new TextView(getContext());
-        tv.setText(text);
-        tv.setTextSize(12);
-        tv.setTextColor(0xFFCCCCCC);
-        var p = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        p.topMargin = dp(8);
-        p.bottomMargin = dp(2);
-        tv.setLayoutParams(p);
-        return tv;
-    }
-
-    private int dp(float dp) {
-        return (int) (dp * getContext().getResources().getDisplayMetrics().density);
     }
 }
