@@ -1,6 +1,5 @@
 package de.winniepat.parrotmod.ui;
 
-import de.winniepat.parrotmod.Parrotmod;
 import icyllis.modernui.fragment.Fragment;
 import icyllis.modernui.util.DataSet;
 import icyllis.modernui.view.LayoutInflater;
