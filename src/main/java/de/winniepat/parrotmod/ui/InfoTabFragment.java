@@ -20,7 +20,7 @@ public class InfoTabFragment extends Fragment {
         layout.setPadding(dp(12), dp(12), dp(12), dp(12));
 
         String parrotVersion = FabricLoader.getInstance().getModContainer("parrotmod").orElseThrow().getMetadata().getVersion().getFriendlyString();
-        layout.addView(makeLabel("Parrotmod version: " + parrotVersion + " (Build " + Parrotmod.BUILD + ")"));
+        layout.addView(makeLabel("Parrotmod version: " + parrotVersion));
 
         String mcVersion = FabricLoader.getInstance().getModContainer("minecraft").orElseThrow().getMetadata().getVersion().getFriendlyString();
         layout.addView(makeLabel("Minecraft Version: " + Minecraft.getInstance().getLaunchedVersion() + " (" + mcVersion + ")"));
