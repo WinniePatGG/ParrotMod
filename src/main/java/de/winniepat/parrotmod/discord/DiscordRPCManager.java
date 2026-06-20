@@ -148,7 +148,7 @@ public class DiscordRPCManager {
             } else if (dimension == Level.END) {
                 details = "The End";
             } else {
-                details = "Unknown";
+                details = "Custom Dimension: " + dimension.toString();
             }
         } else {
             details = "Playing Minecraft";
